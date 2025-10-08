@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricelist Produk - Hikamura Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --border-color: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00aaff;
+            --accent-hover: #0088cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* --- Animasi & Efek Baru --- */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-primary); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid var(--border-color);
+            border-top-color: var(--accent-color); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .animated-gradient-text {
+            background: linear-gradient(90deg, var(--accent-color), #fff, #00aaff);
+            background-size: 200% auto; color: #fff; background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
+        }
+        @keyframes gradient-flow { to { background-position: 200% center; } }
+
+        .reveal {
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        /* --- Akhir Animasi & Efek Baru --- */
+
+        header {
+            padding: 20px 10%; background: var(--bg-primary); display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo { font-size: 24px; color: #fff; text-decoration: none; font-weight: 700; }
+        
+        .page-header {
+            padding: 80px 10%; text-align: center; background-color: var(--bg-secondary);
+        }
+        .page-header h1 { font-size: 36px; color: var(--accent-color); margin-bottom: 15px; }
+        .page-header p {
+            font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px auto;
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px;
+            border-radius: 40px; font-size: 16px; letter-spacing: 1px;
+            text-decoration: none; font-weight: 600; transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .btn-primary { background: var(--accent-color); color: #fff; }
+        .btn-primary:hover {
+            background: var(--accent-hover); box-shadow: 0 0 20px var(--accent-color);
+            transform: translateY(-3px);
+        }
+        .btn-secondary {
+            background: transparent; color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+        }
+        .btn-secondary:hover { background: var(--accent-color); color: #fff; }
+        
+        .section { padding: 80px 10%; }
+        .section-alt { background-color: var(--bg-secondary); }
+        .section-title { text-align: center; font-size: 36px; margin-bottom: 15px; color: #fff; }
+        .section-subtitle {
+            text-align: center; font-size: 1.1rem; color: var(--text-secondary);
+            margin-top: -10px; margin-bottom: 50px;
+        }
+        
+        .pricelist-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .card {
+            background: var(--bg-card); padding: 25px; border-radius: 15px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+        }
+        
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 200%;
+            background: conic-gradient(var(--accent-color) 0deg, #ff00ff 90deg, var(--accent-color) 180deg, #00ffff 270deg, var(--accent-color) 360deg);
+            z-index: -1; opacity: 0; transition: opacity 0.5s ease;
+            animation: rotate-glow 6s linear infinite;
+        }
+        @keyframes rotate-glow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .card:hover::before { opacity: 0.15; }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 170, 255, 0.2);
+        }
+        
+        .card h3 {
+            font-size: 22px; color: var(--accent-color); margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .card ul { list-style: none; margin: 0; padding: 0; flex-grow: 1; }
+        .card ul li {
+            margin-bottom: 12px; color: #ccc; line-height: 1.6;
+            display: flex; justify-content: space-between;
+        }
+        .card ul li span {
+            font-weight: bold; color: var(--text-primary);
+            text-align: right; margin-left: 10px;
+        }
+        
+        .card .sub-heading {
+            font-weight: 700; color: var(--text-primary); margin-top: 15px;
+            margin-bottom: 10px; font-size: 1.1em;
+        }
+        .card .sub-heading:first-child { margin-top: 0; }
+
+        footer {
+            text-align: center; padding: 20px; background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color); font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            header, .section, .page-header { padding-left: 5%; padding-right: 5%; }
+            .page-header h1, .section-title { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div>
+
+    <header>
+        <a href="index.html" class="logo">Hikamura Store</a>
+        <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1 class="reveal animated-gradient-text">✨ Pricelist Lengkap Produk</h1>
+            <p class="reveal">Temukan daftar harga detail untuk semua layanan digital favorit Anda. Hubungi kami untuk melakukan pemesanan.</p>
+            <a href="https://wa.me/6285820947960" target="_blank" class="btn btn-primary reveal"><i class="fab fa-whatsapp"></i> Pesan Sekarang</a>
+        </section>
+
+        <section id="sosmed-pricelist" class="section">
+            <h2 class="section-title reveal animated-gradient-text">♻️ Suntik Sosial Media</h2>
+            <p class="section-subtitle reveal">[ NO REFILL ]</p>
+            <div class="pricelist-grid">
+                
+                <div class="card reveal">
+                    <h3><i class="fab fa-instagram"></i> Instagram</h3>
+                    <div class="sub-heading">Followers</div>
+                    <ul>
+                        <li>100 Foll <span>Rp6.000</span></li>
+                        <li>500 Foll <span>Rp19.000</span></li>
+                        <li>1.000 Foll <span>Rp35.000</span></li>
+                    </ul>
+                    <div class="sub-heading">Likes</div>
+                    <ul>
+                        <li>100 Like <span>Rp2.500</span></li>
+                        <li>500 Like <span>Rp5.000</span></li>
+                        <li>1.000 Like <span>Rp8.000</span></li>
+                    </ul>
+                    <div class="sub-heading">Views</div>
+                    <ul>
+                        <li>1.000 View <span>Rp2.500</span></li>
+                        <li>2.000 View <span>Rp5.000</span></li>
+                        <li>3.000 View <span>Rp8.000</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3><i class="fab fa-tiktok"></i> TikTok</h3>
+                     <div class="sub-heading">Followers</div>
+                    <ul>
+                        <li>100 Foll <span>Rp5.000</span></li>
+                        <li>500 Foll <span>Rp30.000</span></li>
+                        <li>1.000 Foll <span>Rp50.000</span></li>
+                    </ul>
+                    <div class="sub-heading">Likes</div>
+                    <ul>
+                        <li>100 Like <span>Rp5.000</span></li>
+                        <li>500 Like <span>Rp8.000</span></li>
+                        <li>1.000 Like <span>Rp10.000</span></li>
+                    </ul>
+                    <div class="sub-heading">Views</div>
+                    <ul>
+                        <li>20.000 View <span>Rp5.000</span></li>
+                        <li>50.000 View <span>Rp10.000</span></li>
+                        <li>100.000 View <span>Rp20.000</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3><i class="fab fa-facebook"></i> Facebook Followers</h3>
+                    <ul>
+                        <li>100 Foll <span>Rp5.000</span></li>
+                        <li>500 Foll <span>Rp10.000</span></li>
+                        <li>1.000 Foll <span>Rp20.000</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3><i class="fab fa-youtube"></i> YouTube Likes</h3>
+                    <ul>
+                        <li>100 Like <span>Rp5.000</span></li>
+                        <li>500 Like <span>Rp10.000</span></li>
+                        <li>1.000 Like <span>Rp17.000</span></li>
+                    </ul>
+                </div>
+                
+                <div class="card reveal">
+                    <h3><i class="fas fa-shopping-cart"></i> Shopee Followers</h3>
+                    <ul>
+                        <li>100 Foll <span>Rp5.000</span></li>
+                        <li>500 Foll <span>Rp10.000</span></li>
+                        <li>1.000 Foll <span>Rp20.000</span></li>
+                    </ul>
+                </div>
+                
+                <div class="card reveal">
+                    <h3><i class="fab fa-whatsapp"></i> WhatsApp Channel</h3>
+                    <ul>
+                        <li>100 Foll <span>Rp5.000</span></li>
+                        <li>400 Foll <span>Rp15.000</span></li>
+                        <li>1.000 Foll <span>Rp35.000</span></li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="kuota-pricelist" class="section section-alt">
+            <h2 class="section-title reveal animated-gradient-text">📑 Katalog Kuota All Operator</h2>
+            <div class="pricelist-grid">
+                
+                <div class="card reveal">
+                    <h3>🔴 Telkomsel</h3>
+                    <ul>
+                        <li>500MB - 7 Hari <span>Rp9.220</span></li>
+                        <li>1GB - 30 Hari <span>Rp13.460</span></li>
+                        <li>1.5GB - 30 Hari <span>Rp23.600</span></li>
+                        <li>2GB - 30 Hari <span>Rp22.100</span></li>
+                        <li>3GB - 30 Hari <span>Rp25.575</span></li>
+                        <li>4GB - 30 Hari <span>Rp34.300</span></li>
+                        <li>5GB - 30 Hari <span>Rp34.450</span></li>
+                        <li>6GB - 30 Hari <span>Rp44.100</span></li>
+                        <li>7GB - 30 Hari <span>Rp45.275</span></li>
+                        <li>8GB - 30 Hari <span>Rp46.300</span></li>
+                        <li>9GB - 30 Hari <span>Rp71.800</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3>🟡 Indosat</h3>
+                    <ul>
+                        <li>100MB - 30 Hari <span>Rp2.288</span></li>
+                        <li>200MB - 30 Hari <span>Rp2.800</span></li>
+                        <li>300MB+MasaAktif <span>Rp11.350</span></li>
+                        <li>500MB - 30 Hari <span>Rp4.650</span></li>
+                        <li>750MB - 14 Hari <span>Rp6.150</span></li>
+                        <li>1GB - 30 Hari <span>Rp7.311</span></li>
+                        <li>1.5GB - 14 Hari <span>Rp11.150</span></li>
+                        <li>2GB - 30 Hari <span>Rp13.149</span></li>
+                        <li>2.75GB - 3 Hari <span>Rp13.800</span></li>
+                        <li>2.5GB - 14 Hari <span>Rp16.725</span></li>
+                        <li>5GB - 30 Hari <span>Rp29.400</span></li>
+                        <li>10GB - 30 Hari <span>Rp43.750</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3>🔵 Tri</h3>
+                    <ul>
+                        <li>100MB - 30 Hari <span>Rp2.288</span></li>
+                        <li>200MB - 30 Hari <span>Rp2.800</span></li>
+                        <li>500MB - 30 Hari <span>Rp4.650</span></li>
+                        <li>1GB - 30 Hari <span>Rp7.311</span></li>
+                        <li>2GB - 30 Hari <span>Rp13.149</span></li>
+                        <li>2.5GB - 14 Hari <span>Rp16.725</span></li>
+                        <li>5GB - 30 Hari <span>Rp29.400</span></li>
+                        <li>10GB - 30 Hari <span>Rp43.750</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3>🟣 Axis</h3>
+                     <ul>
+                        <li>500MB - 30 Hari <span>Rp5.190</span></li>
+                        <li>1GB - 30 Hari <span>Rp8.245</span></li>
+                        <li>1.5GB - 30 Hari <span>Rp23.454</span></li>
+                        <li>2GB - 30 Hari <span>Rp15.340</span></li>
+                        <li>3GB - 30 Hari <span>Rp31.204</span></li>
+                        <li>5GB - 30 Hari <span>Rp39.751</span></li>
+                        <li>8GB - 30 Hari <span>Rp37.825</span></li>
+                        <li>12GB - 30 Hari <span>Rp56.725</span></li>
+                        <li>15GB - 30 Hari <span>Rp69.050</span></li>
+                    </ul>
+                </div>
+
+                 <div class="card reveal">
+                    <h3>⚪ Smartfren</h3>
+                     <ul>
+                        <li>1GB - 3 Hari <span>Rp7.410</span></li>
+                        <li>2GB - 3 Hari <span>Rp10.210</span></li>
+                        <li>1GB - 7 Hari <span>Rp10.950</span></li>
+                        <li>1.5GB - 7 Hari <span>Rp13.000</span></li>
+                        <li>3GB - 5 Hari <span>Rp14.435</span></li>
+                        <li>4GB+UnliApp - 14 Hari <span>Rp17.800</span></li>
+                        <li>12GB - 30 Hari <span>Rp21.650</span></li>
+                    </ul>
+                </div>
+
+                 <div class="card reveal">
+                    <h3>🔵 XL</h3>
+                    <ul>
+                        <li>500MB - 30 Hari <span>Rp5.150</span></li>
+                        <li>800MB - 30 Hari <span>Rp7.200</span></li>
+                        <li>1GB - 30 Hari <span>Rp8.250</span></li>
+                        <li>2GB - 30 Hari <span>Rp14.100</span></li>
+                        <li>3GB - 30 Hari <span>Rp20.170</span></li>
+                        <li>4GB - 30 Hari <span>Rp26.875</span></li>
+                        <li>5GB - 30 Hari <span>Rp33.775</span></li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Hikamura Store. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.querySelector('.preloader');
+            window.addEventListener('load', () => { preloader.classList.add('hidden'); });
+
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            revealElements.forEach(el => { observer.observe(el); });
+        });
+    </script>
+</body>
+</html>
