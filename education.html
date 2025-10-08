@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panduan & FAQ - Hikamura Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --border-color: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00aaff;
+            --accent-hover: #0088cc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-primary); overflow-x: hidden; }
+
+        /* --- Animasi & Efek Baru --- */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-primary); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid var(--border-color);
+            border-top-color: var(--accent-color); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .animated-gradient-text {
+            background: linear-gradient(90deg, var(--accent-color), #fff, #00aaff);
+            background-size: 200% auto; color: #fff; background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
+        }
+        @keyframes gradient-flow { to { background-position: 200% center; } }
+
+        .reveal {
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        /* --- Akhir Animasi & Efek Baru --- */
+
+        header {
+            padding: 20px 10%; background: var(--bg-primary); display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-size: 24px; color: #fff; text-decoration: none; font-weight: 700; }
+        
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px;
+            border-radius: 40px; font-size: 16px; letter-spacing: 1px;
+            text-decoration: none; font-weight: 600; transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .btn-secondary { background: transparent; color: var(--accent-color); border: 2px solid var(--accent-color); }
+        .btn-secondary:hover { background: var(--accent-color); color: #fff; }
+        
+        .page-header { padding: 80px 10%; text-align: center; background-color: var(--bg-secondary); }
+        .page-header h1 { font-size: 36px; color: var(--accent-color); margin-bottom: 15px; }
+        .page-header p { font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px auto; color: var(--text-secondary); line-height: 1.7; }
+        
+        .section { padding: 80px 10%; }
+        .section-alt { background-color: var(--bg-secondary); }
+        .section-title { text-align: center; font-size: 36px; margin-bottom: 50px; color: #fff; }
+        
+        .how-to-order-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .step-item {
+            background: var(--bg-card); padding: 2rem; border-radius: 15px; text-align: center;
+            border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .step-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 170, 255, 0.1); }
+        .step-item .step-number {
+            width: 50px; height: 50px; line-height: 50px; border-radius: 50%;
+            background-color: var(--accent-color); color: #fff; font-size: 1.5rem;
+            font-weight: 700; margin: 0 auto 1.5rem auto;
+        }
+        .step-item h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .step-item p { color: var(--text-secondary); }
+
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-item { background: var(--bg-card); margin-bottom: 1rem; border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; cursor: pointer; font-size: 1.1rem; font-weight: 600; }
+        .faq-question .icon { transition: transform 0.3s ease; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+        .faq-answer p { padding: 0 1.5rem 1.5rem 1.5rem; color: var(--text-secondary); line-height: 1.7; }
+        .faq-item.active .faq-question .icon { transform: rotate(45deg); }
+        .faq-item.active .faq-answer { max-height: 200px; }
+
+        footer { text-align: center; padding: 20px; background-color: var(--bg-secondary); border-top: 1px solid var(--border-color); font-size: 14px; }
+
+        @media (max-width: 768px) {
+            header, .section, .page-header { padding-left: 5%; padding-right: 5%; }
+            .page-header h1, .section-title { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div>
+
+    <header>
+        <a href="index.html" class="logo">Hikamura Store</a>
+        <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali ke Menu</a>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1 class="reveal animated-gradient-text"><i class="fas fa-question-circle"></i> Panduan & Pertanyaan Umum</h1>
+            <p class="reveal">Bingung bagaimana cara memesan atau punya pertanyaan? Temukan semua jawabannya di sini untuk pengalaman transaksi yang lebih lancar.</p>
+        </section>
+
+        <section id="cara-order" class="section">
+            <h2 class="section-title reveal animated-gradient-text">Cara Memesan</h2>
+            <div class="how-to-order-grid">
+                <div class="step-item reveal">
+                    <div class="step-number">1</div>
+                    <h3>Pilih Layanan</h3>
+                    <p>Jelajahi semua layanan kami dan pilih yang sesuai dengan kebutuhan Anda.</p>
+                </div>
+                <div class="step-item reveal">
+                    <div class="step-number">2</div>
+                    <h3>Hubungi Kami</h3>
+                    <p>Klik tombol pesan atau hubungi kami via WhatsApp dengan menyebutkan layanan yang Anda inginkan.</p>
+                </div>
+                <div class="step-item reveal">
+                    <div class="step-number">3</div>
+                    <h3>Lakukan Pembayaran</h3>
+                    <p>Kami akan memberikan instruksi pembayaran. Kami menerima QRIS, E-Wallet, dan lainnya.</p>
+                </div>
+                <div class="step-item reveal">
+                    <div class="step-number">4</div>
+                    <h3>Konfirmasi & Proses</h3>
+                    <p>Setelah pembayaran dikonfirmasi, pesanan Anda akan segera kami proses secepatnya.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="section section-alt">
+            <h2 class="section-title reveal animated-gradient-text">Pertanyaan Umum (FAQ)</h2>
+            <div class="faq-container">
+                <div class="faq-item reveal">
+                    <div class="faq-question"> <span>Apakah layanan di sini aman?</span> <i class="fas fa-plus icon"></i> </div>
+                    <div class="faq-answer"> <p>Tentu saja. Kami menggunakan metode yang aman dan teruji untuk semua layanan kami. Keamanan dan privasi akun Anda adalah prioritas utama kami.</p> </div>
+                </div>
+                <div class="faq-item reveal">
+                    <div class="faq-question"> <span>Berapa lama proses pengerjaannya?</span> <i class="fas fa-plus icon"></i> </div>
+                    <div class="faq-answer"> <p>Waktu proses bervariasi tergantung jenis layanan. Untuk layanan instan seperti kuota, prosesnya hanya beberapa detik. Untuk layanan lain seperti editing, estimasi akan diberikan saat pemesanan.</p> </div>
+                </div>
+                <div class="faq-item reveal">
+                    <div class="faq-question"> <span>Metode pembayaran apa saja yang diterima?</span> <i class="fas fa-plus icon"></i> </div>
+                    <div class="faq-answer"> <p>Kami menerima berbagai metode pembayaran populer, termasuk QRIS, DANA, OVO, GoPay, dan transfer bank untuk mempermudah transaksi Anda.</p> </div>
+                </div>
+                <div class="faq-item reveal">
+                    <div class="faq-question"> <span>Apakah ada garansi untuk layanan?</span> <i class="fas fa-plus icon"></i> </div>
+                    <div class="faq-answer"> <p>Ya, kami memberikan garansi untuk beberapa layanan tertentu. Detail mengenai garansi akan dijelaskan sebelum Anda melakukan pembayaran.</p> </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Hikamura Store. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preloader Script
+            const preloader = document.querySelector('.preloader');
+            window.addEventListener('load', () => { preloader.classList.add('hidden'); });
+
+            // Reveal on Scroll Script
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => { observer.observe(el); });
+
+            // Existing FAQ Accordion Script
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                question.addEventListener('click', () => {
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    item.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
