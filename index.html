@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hikamura Store - Pricelist Layanan Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        /* Import Font Poppins */
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+        /* Variabel Warna untuk kemudahan kustomisasi */
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --border-color: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00aaff;
+            --accent-hover: #0088cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden; /* Mencegah scroll horizontal karena animasi */
+        }
+        
+        /* ===== EFEK BARU: Preloader Halaman ===== */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+
+        /* --- Header & Navigasi --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 10%;
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s;
+        }
+
+        .logo {
+            font-size: 24px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        nav a {
+            font-size: 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 30px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--accent-color);
+        }
+
+        /* --- Bagian Home (Hero Section) --- */
+        .home {
+            position: relative; /* Diperlukan untuk background partikel */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0 10%;
+            gap: 2rem;
+            overflow: hidden; /* Mencegah partikel keluar section */
+        }
+        
+        /* ===== EFEK BARU: Latar Belakang Partikel Bintang ===== */
+        @keyframes move-stars {
+            from { background-position: 0 0; }
+            to   { background-position: -10000px 5000px; }
+        }
+
+        .home::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            z-index: -1;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: move-stars 200s linear infinite;
+        }
+        
+        .home-img {
+            text-align: center;
+        }
+
+        /* ===== EFEK BARU: Animasi Mengambang (Floating) ===== */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .home-img img {
+            max-width: 100%;
+            height: auto;
+            max-height: 450px;
+            animation: float 6s ease-in-out infinite; /* Menambahkan animasi float */
+        }
+        
+        /* ===== EFEK BARU: Teks Gradient Beranimasi ===== */
+        .animated-gradient-text {
+            background: linear-gradient(90deg, var(--accent-color), #fff, #00aaff);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
+        }
+
+        @keyframes gradient-flow {
+            to { background-position: 200% center; }
+        }
+
+        .home-content h1 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .home-content h1 span {
+            color: var(--accent-color); /* Fallback jika gradient tidak didukung */
+        }
+
+        .home-content h3 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ccc;
+            min-height: 38px;
+            margin: 10px 0 20px;
+        }
+
+        .typing-text span { position: relative; }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background-color: var(--accent-color);
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .home-content p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .home-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 20px var(--accent-color);
+            transform: translateY(-3px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-color);
+            transform: translateY(-3px);
+        }
+        
+        /* --- Bagian Layanan & Pricelist --- */
+        .section {
+            padding: 80px 10%;
+            position: relative; /* Untuk efek highlight */
+        }
+
+        .section-alt {
+            background-color: var(--bg-secondary);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+            color: #fff;
+        }
+        
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            list-style: none;
+            text-align: center;
+        }
+        
+        .services-list li {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .services-list li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 170, 255, 0.1);
+        }
+        
+        .services-list li a {
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+
+        .pricelist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            position: relative; /* Diperlukan untuk efek glow */
+            overflow: hidden; /* Menyembunyikan glow yang keluar */
+        }
+        
+        /* ===== EFEK BARU: Aurora Glow pada Card Hover ===== */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                var(--accent-color) 0deg, 
+                #ff00ff 90deg, 
+                var(--accent-color) 180deg, 
+                #00ffff 270deg, 
+                var(--accent-color) 360deg
+            );
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            animation: rotate-glow 6s linear infinite;
+        }
+        
+        @keyframes rotate-glow {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .card:hover::before {
+            opacity: 0.15;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 170, 255, 0.2);
+        }
+        
+        .card h3 {
+            font-size: 22px;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card ul {
+            list-style: none;
+            margin-bottom: 20px;
+            flex-grow: 1;
+             position: relative;
+            z-index: 1;
+        }
+        
+        .card ul li {
+            margin-bottom: 12px;
+            color: #ccc;
+        }
+        
+        .card ul li strong {
+            color: #fff;
+            display: block;
+            font-size: 1.1em;
+        }
+
+        .card ul li span {
+            float: right;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+        
+        .card .note, .section-note {
+            background: rgba(0, 170, 255, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: auto;
+             position: relative;
+            z-index: 1;
+        }
+        .card .note p, .section-note p { margin: 0; }
+        
+        .section-note-container {
+            text-align: center; 
+            margin-top: 40px;
+        }
+
+        .section-note-container .section-note {
+            display: inline-block; 
+            max-width: 600px;
+            text-align: left;
+        }
+        
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        
+        /* ===== EFEK BARU: Animasi Saat Scroll (Reveal Animation) ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- Responsive Design --- */
+        @media (max-width: 992px) {
+            header { padding: 20px 5%; }
+            .section, .home { padding: 80px 5%; }
+            .home {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .home-img {
+                order: -1;
+                margin-bottom: 20px;
+            }
+            .home-buttons { justify-content: center; }
+        }
+
+        @media (max-width: 768px) {
+            nav { display: none; }
+            .home-content h1, .section-title { font-size: 36px; }
+            .home-content h3 { font-size: 22px; }
+        }
+        
+        /* Animasi untuk profile-pic yang sudah ada (disimpan) */
+        @keyframes rainbowGlow {
+            0% { box-shadow: 0 0 20px #ff0000; border-color: #ff0000; }
+            25% { box-shadow: 0 0 20px #00ff00; border-color: #00ff00; }
+            50% { box-shadow: 0 0 20px #0000ff; border-color: #0000ff; }
+            75% { box-shadow: 0 0 20px #ff00ff; border-color: #ff00ff; }
+            100% { box-shadow: 0 0 20px #ff0000; border-color: #ff0000; }
+        }
+
+        @keyframes borderRainbow {
+            0% { border-color: red; } 25% { border-color: yellow; } 50% { border-color: lime; } 75% { border-color: cyan; } 100% { border-color: red; }
+        }
+
+        .profile-pic {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            animation: 
+                rainbowGlow 5s infinite alternate,
+                borderRainbow 6s linear infinite,
+                float 6s ease-in-out infinite; /* Menggabungkan animasi float */
+        }
+        
+        /* ===== EFEK BARU: Highlight Section Saat di-scroll ===== */
+        @keyframes section-glow-animation {
+            0% { box-shadow: 0 0 20px 5px rgba(0, 170, 255, 0.4); }
+            25% { box-shadow: 0 0 25px 8px rgba(255, 0, 255, 0.5); }
+            50% { box-shadow: 0 0 30px 10px rgba(0, 255, 255, 0.4); }
+            75% { box-shadow: 0 0 25px 8px rgba(255, 0, 255, 0.5); }
+            100% { box-shadow: 0 0 20px 5px rgba(0, 170, 255, 0.4); }
+        }
+
+        .highlight-section {
+            animation: section-glow-animation 2.5s ease-in-out;
+            border-radius: 15px; /* Menyamakan dengan radius card */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <header>
+        <a href="#" class="logo">ARMAN GZ Official</a>
+        <nav>
+            <a href="#services-overview" class="active">Layanan</a>
+            <a href="#produk-utama">Produk</a>
+            <a href="#benefits">Benefit</a> 
+            <a href="#editing">Editing</a>
+            <a href="#wording">Wording</a>
+            <a href="#sewa-bot">Sewa Bot</a>
+            <a href="service.html">Service</a>
+            <a href="crypto.html">Crypto Grafik</a>
+            <a href="owner.html">Owner Panel</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="home">
+            <div class="home-content reveal">
+                <h1>Selamat Datang di <span class="animated-gradient-text">ARMAN GZ Official</span></h1>
+                <h3 class="typing-text"><span></span><span class="cursor">|</span></h3>
+                <p>
+                    Kami menyediakan berbagai layanan digital untuk kebutuhan Bot, Sosmed, Kouta, dan otomatisasi. Lihat daftar lengkap layanan kami di bawah dan hubungi kami untuk melakukan pemesanan.
+                </p>
+                <div class="home-buttons">
+                    <a href="https://wa.me/6285820947960" target="_blank" class="btn btn-primary"><i class="fab fa-whatsapp"></i> Order via WhatsApp</a>
+                    <a href="https://t.me/ArmanGZOffc" target="_blank" class="btn btn-primary"><i class="fab fa-telegram"></i> Order via Telegram</a>
+                    <a href="produklainya.html" class="btn btn-secondary">Lihat Produk Lainnya</a>
+                    <a href="service.html" class="btn btn-secondary">Service</a>
+                    <a href="contact.html" class="btn btn-secondary">Pertanyaan</a>
+                    <a href="tentang.html" class="btn btn-secondary">Tentang Web Ini</a>
+                    <a href="education.html" class="btn btn-secondary">Education</a>
+                    <a href="crypto.html" class="btn btn-secondary">Grafik Crypto</a>
+                    <a href="owner.html" class="btn btn-secondary">Owner Panel</a>
+                </div>
+            </div>
+            <div class="home-img reveal">
+                <img src="logo.png" alt="Profile Picture" class="profile-pic" />
+            </div>
+        </section>
+
+        <section id="services-overview" class="section section-alt">
+            <h2 class="section-title reveal animated-gradient-text">Produk & Layanan Kami</h2>
+            <ul class="services-list">
+                <li class="reveal"><a href="#keuntungan-sosmed">SUNTIK SOSMED</a></li>
+                <li class="reveal"><a href="#produk-utama">KUOTA ALL OPERATOR</a></li>
+                <li class="reveal"><a href="#benefits">PARTNER / RESS JUSTIN</a></li>
+                <li class="reveal"><a href="#produk-utama">BUYER VIP JUSTIN</a></li>
+                <li class="reveal"><a href="#produk-utama">PANEL PTERODACTYL</a></li>
+                <li class="reveal"><a href="#sewa-bot">SEWA BOT GRUP</a></li>
+                <li class="reveal"><a href="#jasa-sebar">JASEB ROLEPLAY</a></li>
+                <li class="reveal"><a href="#produk-utama">KEBUTUHAN SCRIPT</a></li>
+                <li class="reveal"><a href="#editing">MOODBOARD & EDITING</a></li>
+                <li class="reveal"><a href="#editing">DESAIN POSTER & LOGO</a></li>
+                <li class="reveal"><a href="#wording">JASA WORDING</a></li>
+                <li class="reveal"><a href="#produk-utama">KEBUTUHAN GAMING</a></li>
+            </ul>
+        </section>
+        
+        <section id="produk-utama" class="section">
+            <h2 class="section-title reveal animated-gradient-text">✨ Produk & Kebutuhan Digital</h2>
+            <div class="section-note-container reveal">
+                 <div class="section-note" style="border-color: #ffc107; background: rgba(255, 193, 7, 0.1);">
+                    <p><strong>📌 SEMUA PRODUK TERBATAS – JANGAN SAMPAI KEHABISAN!</strong></p>
+                </div>
+            </div>
+            <br><br>
+            <div class="pricelist-grid">
+                 <div class="card reveal">
+                    <h3><i class="fas fa-gem"></i> Produk & Slot Tersedia</h3>
+                    <ul>
+                        <li>JustinV21 <span>50K</span></li>
+                        <li>JustinV21 Via Tele <span>50K</span></li>
+                        <li>🔥 Satanic V1 <span>50K</span></li>
+                        <li>😈 MannCrasher V1 <span>25K</span></li>
+                        <li>🤝 Reseller <span>130K</span></li>
+                        <li>🚀 Partner <span>200K</span></li>
+                        <li>👑 Buyer VIP Permanen <span>100K</span></li>
+                        <li>🛠️ SC MD 1K Fitur <span>70K</span></li>
+                        <li>📲 Suntik Sosmed <span>Klik Lihat Produk lainya</span></li>
+                        <li>📶 Kuota All Operator <span>Klik Lihat Produk lainya</span></li>
+                    </ul>
+                </div>
+
+                <div class="card reveal">
+                    <h3><i class="fas fa-server"></i> Ready Panel Pterodactyl</h3>
+                    <ul>
+                       <li><strong>Hanya 10K</strong></li>
+                       <li>RAM • CPU • Disk <span>Unlimited</span></li>
+                       <li>Cocok buat Bot WhatsApp & Server Minecraft</li>
+                       <li>Spek VPS: R8 C4</li>
+                    </ul>
+                </div>
+                
+                <div class="card reveal">
+                    <h3><i class="fas fa-hdd"></i> Ready VPS</h3>
+                    <ul>
+                        <li>R2 C2 <span>20K</span></li>
+                        <li>R4 C2 <span>35K</span></li>
+                        <li>R8 C4 <span>50K</span></li>
+                        <li>✅ Free Install Panel, Egg, Wings</li>
+                        <li>✅ Bisa request OS & Region</li>
+                        <li>📅 Aktif 30 Hari (Garansi 15 Hari)</li>
+                    </ul>
+                </div>
+
+                 <div class="card reveal">
+                    <h3><i class="fas fa-plus-circle"></i> Layanan Tambahan</h3>
+                    <ul>
+                        <li>SubDomain <span>2K / bulan</span></li>
+                        <li>SetUp VPS + 2 SubDomain <span>5K</span></li>
+                        <li>Domain .my.id <span>(Tanya Harga)</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        //Yang ngintip kodenya klean mau ngapain si wkwk
+        //Ada ada saja, ini cuman html doang
+        //Create by ARMAN GZ Official
+        //Konsep Animation scroll
+        //CSS RGB
+        //Own : ARMAN GZ Official
+        <section id="benefits" class="section section-alt">
+            <h2 class="section-title reveal animated-gradient-text">🎁 Benefit & Keuntungan</h2>
+            <div class="pricelist-grid">
+                <div class="card reveal">
+                    <h3>🤝 Benefit Reseller</h3>
+                    <ul>
+                        <li>Free Update Permanen</li>
+                        <li>Bisa Open PO Sendiri</li>
+                        <li>Bisa Jualan SC</li>
+                        <li>Dapet 2 Versi (WA & Tele)</li>
+                        <li>Bisa Open Buyer VIP Permanen</li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>🚀 Benefit Partner</h3>
+                    <ul>
+                        <li>Semua Benefit Reseller</li>
+                        <li>Bisa Open Reseller Justin</li>
+                        <li>Dapet Funct Setiap Update (kadang-kadang)</li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>🛠️ Keuntungan Beli SC MD</h3>
+                    <ul>
+                        <li>Free Panel Sebulan</li>
+                        <li>Akses Grup Update Eksklusif</li>
+                        <li>100% NO ENC – Bebas Modifikasi</li>
+                        <li>Total 1000+ fitur aktif</li>
+                        <li>Bebas Request Fitur Khusus</li>
+                        <li>Database Aman</li>
+                    </ul>
+                </div>
+                 <div class="card reveal">
+                    <h3>📛 Keuntungan Script BUG</h3>
+                    <ul>
+                        <li>Bisa Bug Teman / Siapapun</li>
+                        <li>Berbagai Function OP (Crash, Force, Invis)</li>
+                        <li>Bikin HP kentang nge-lag parah</li>
+                        <li>WA korban auto keluar</li>
+                        <li>Bisa target IP (tidak se-OP Android)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="keuntungan-sosmed" class="section">
+             <h2 class="section-title reveal animated-gradient-text">✅ Keuntungan Suntik Sosmed</h2>
+             <div class="pricelist-grid">
+                <div class="card reveal">
+                    <h3>1. Akun Jadi Cepat Rame</h3>
+                    <div class="note"><p>Followers, like, dan views langsung bertambah banyak dalam waktu singkat.</p></div>
+                </div>
+                <div class="card reveal">
+                    <h3>2. Lebih Dipercaya Orang</h3>
+                    <div class="note"><p>Akun yang kelihatan rame bikin orang lain lebih yakin kalau akunmu itu asli dan profesional.</p></div>
+                </div>
+                 <div class="card reveal">
+                    <h3>3. Jualan Lebih Mudah Laku</h3>
+                    <div class="note"><p>Akun bisnis yang ramai pengikutnya biasanya lebih gampang mendapatkan penjualan (closing).</p></div>
+                </div>
+                 <div class="card reveal">
+                    <h3>4. Konten Lebih Mudah Viral</h3>
+                    <div class="note"><p>Kalau followers dan like tinggi, peluang kontenmu masuk FYP atau Explore jadi lebih besar.</p></div>
+                </div>
+                 <div class="card reveal">
+                    <h3>5. Hemat Waktu & Tenaga</h3>
+                    <div class="note"><p>Gak perlu nunggu berbulan-bulan untuk bangun akun, bisa langsung terlihat besar dan kredibel.</p></div>
+                </div>
+                <div class="card reveal">
+                    <h3>6. Meningkatkan Citra Diri</h3>
+                    <div class="note"><p>Sangat cocok untuk influencer, artis, atau siapapun yang ingin terlihat lebih populer dan profesional.</p></div>
+                </div>
+             </div>
+        </section>
+
+        <section id="jasa-sebar" class="section section-alt">
+            <h2 class="section-title reveal animated-gradient-text"><i class="fas fa-bullhorn"></i> Jasa Sebar LPM</h2>
+            <div class="pricelist-grid">
+                <div class="card reveal">
+                    <h3>Satu Kali Sebar</h3>
+                    <ul>
+                        <li>50 Lpm <span>75p</span></li>
+                        <li>100 Lpm <span>150p</span></li>
+                        <li>150 Lpm <span>225p</span></li>
+                        <li>200 Lpm <span>300p</span></li>
+                        <li>250 Lpm <span>375p</span></li>
+                    </ul>
+                    <div class="note">
+                        <p><strong>Note:</strong> Harga berlaku kelipatan. Pengerjaan maks 7 jam. Fee Inrush 500p. Tidak menerima list freelance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="editing" class="section">
+            <h2 class="section-title reveal animated-gradient-text"><i class="fas fa-paint-brush"></i> Pricelist Editing</h2>
+            <div class="pricelist-grid">
+                <div class="card reveal">
+                    <h3>Moodboard</h3>
+                    <ul>
+                        <li><strong>Basic:</strong> 3 slide (1k), 6 slide (2k)</li>
+                        <li><strong>Simple Deco:</strong> 3 slide (4k), 6 slide (8k)</li>
+                        <li><strong>Medium Deco:</strong> 3 slide (6k), 6 slide (12k)</li>
+                        <li><strong>Full Deco:</strong> 3 slide+header (8k), 6 slide+header (16k)</li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>Twibbon</h3>
+                    <ul>
+                        <li>Simple <span>Rp. 3.000</span></li>
+                        <li>Medium <span>Rp. 6.000</span></li>
+                        <li>Full <span>Rp. 9.000</span></li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>Poster & Yearbook</h3>
+                    <ul>
+                        <li><strong>Poster Simple:</strong> <span>Rp. 4.000</span></li>
+                        <li><strong>Poster Medium:</strong> <span>Rp. 6.000</span></li>
+                        <li><strong>Poster Full:</strong> <span>Rp. 8.000</span></li>
+                        <li><strong>Yearbook (6 pict):</strong> <span>Mulai dari 3k</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="section-note-container reveal">
+                <div class="section-note">
+                    <p><strong>Note Editing:</strong> Estimasi 2-5 hari. Inrush (24 jam: +2k, 12 jam: +3k, 3 jam: +4k). Wajib beri 1 sample/inspo.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="wording" class="section section-alt">
+            <h2 class="section-title reveal animated-gradient-text"><i class="fas fa-pencil-alt"></i> Wording</h2>
+            <div class="pricelist-grid">
+                <div class="card reveal">
+                    <h3>Deskripsi & List</h3>
+                    <ul>
+                        <li>Deskripsi Short <span>2.000</span></li>
+                        <li>Deskripsi Medium <span>4.000</span></li>
+                        <li>Deskripsi Long <span>6.000</span></li>
+                        <li>List Short <span>2.000</span></li>
+                        <li>List Medium <span>4.000</span></li>
+                        <li>List Long <span>6.000</span></li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>Put Loc, DN & Bracket</h3>
+                    <ul>
+                        <li>Put Loc Short <span>1.500</span></li>
+                        <li>Put DN Short <span>500p</span></li>
+                        <li>Bracket Short <span>1.000</span></li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>Kebutuhan Katalog</h3>
+                    <ul>
+                        <li>Tittle Katalog (1 tema) <span>200p</span></li>
+                        <li>Desk Katalog Short <span>3.000</span></li>
+                        <li>Desk Katalog Medium <span>5.000</span></li>
+                        <li>Desk Katalog Long <span>7.000</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="section-note-container reveal">
+                <div class="section-note">
+                    <p><strong>Note Wording:</strong> Pengerjaan maksimal 3 hari. Inrush untuk teks panjang (fee 1.000).</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="sewa-bot" class="section">
+            <h2 class="section-title reveal animated-gradient-text"><i class="fas fa-robot"></i> Sewa Bot</h2>
+            <div class="pricelist-grid">
+                <div class="card reveal">
+                    <h3>Bot Khusus Grup</h3>
+                    <ul>
+                        <li>1 Hari <span>500p</span></li>
+                        <li>1 Minggu <span>2.000</span></li>
+                        <li>1 Bulan <span>5.000</span></li>
+                        <li>2 Bulan <span>10.000</span></li>
+                        <li>1 Bulan + 1 Prem <span>6.000</span></li>
+                    </ul>
+                     <div class="note"><p>Garansi hangus jika bot di-kick.</p></div>
+                </div>
+                <div class="card reveal">
+                    <h3>Bot Khusus Store</h3>
+                    <ul>
+                        <li><strong>Harga Awal Pembuatan:</strong> <span>Total 23.000</span> (atau 18.000 jika nokos sendiri).</li>
+                        <li><strong>Perpanjang 1 Bulan:</strong> <span>11.000</span></li>
+                        <li><strong>Perpanjang 2 Bulan:</strong> <span>21.000</span></li>
+                    </ul>
+                </div>
+                <div class="card reveal">
+                    <h3>User Premium Bot</h3>
+                     <ul>
+                        <li>1 Hari <span>200p</span></li>
+                        <li>1 Minggu <span>1.500</span></li>
+                        <li>1 Bulan <span>3.000</span></li>
+                    </ul>
+                    <div class="note"><p>Dapat limit tak terbatas (unlimited) dan akses fitur premium.</p></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Hikamura Store. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        // ===== SCRIPT BARU: Preloader =====
+        const preloader = document.querySelector('.preloader');
+        window.addEventListener('load', () => {
+            preloader.classList.add('hidden');
+        });
+
+        // Efek Ketik (Typing Effect) - Tetap ada
+        const typingText = document.querySelector(".typing-text span");
+        const cursor = document.querySelector(".cursor");
+        
+        const words = [ "Jasa Sebar LPM", "Pricelist Editing", "Layanan Wording", "Sewa Bot Terpercaya" ];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeTimeout;
+
+        function typeEffect() {
+            const currentWord = words[wordIndex];
+            const displayedText = isDeleting
+                ? currentWord.substring(0, charIndex--)
+                : currentWord.substring(0, charIndex++);
+
+            typingText.textContent = displayedText;
+            
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                typeTimeout = setTimeout(typeEffect, 2000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                typeTimeout = setTimeout(typeEffect, 500);
+            } else {
+                typeTimeout = setTimeout(typeEffect, isDeleting ? 100 : 150);
+            }
+        }
+
+        // Navigasi Aktif saat Scroll (Scroll Spy)
+        const sections = document.querySelectorAll("main section[id]");
+        const navLinks = document.querySelectorAll("nav a");
+
+        function activateMenuLink() {
+            let scrollY = window.pageYOffset;
+            sections.forEach(sec => {
+                const offset = sec.offsetTop - 150;
+                const height = sec.offsetHeight;
+                const id = sec.getAttribute("id");
+                const navLink = document.querySelector(`nav a[href="#${id}"]`);
+
+                if (scrollY > offset && scrollY <= offset + height) {
+                    navLinks.forEach(link => link.classList.remove("active"));
+                    if(navLink) navLink.classList.add("active");
+                }
+            });
+        }
+        
+        window.addEventListener("scroll", activateMenuLink);
+        
+        // ===== SCRIPT BARU: Intersection Observer untuk Animasi Scroll =====
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Optional: unobserve setelah animasi selesai agar tidak berulang
+                    // observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1 // elemen dianggap terlihat jika 10% areanya masuk viewport
+        });
+
+        revealElements.forEach(el => {
+            observer.observe(el);
+        });
+
+        // Memulai efek ketik
+        if (typingText) {
+            typeEffect();
+        }
+
+        // ===== SCRIPT BARU: Smooth Scroll & Highlight Section =====
+        const serviceLinks = document.querySelectorAll('.services-list a');
+        serviceLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+
+                if (targetSection) {
+                    // Hapus highlight dari section lain jika ada
+                    document.querySelectorAll('.highlight-section').forEach(el => {
+                        el.classList.remove('highlight-section');
+                    });
+                    
+                    // Scroll ke section
+                     targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Tambahkan efek highlight setelah scroll selesai (dengan sedikit delay)
+                    setTimeout(() => {
+                        targetSection.classList.add('highlight-section');
+                        // Hapus efek setelah 2.5 detik
+                        setTimeout(() => {
+                            targetSection.classList.remove('highlight-section');
+                        }, 2500);
+                    }, 700); // delay 700ms untuk menunggu scroll
+                }
+            });
+        });
+      });
+    </script>
+</body>
+</html>
