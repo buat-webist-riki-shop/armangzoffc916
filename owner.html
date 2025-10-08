@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Control Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-panel: #16213e;
+            --bg-card: #0f3460;
+            --accent-primary: #e94560;
+            --accent-secondary: #533483;
+            --text-light: #ffffff;
+            --text-muted: #a7a9be;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- Login Overlay --- */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000; transition: opacity 0.5s;
+        }
+        .login-box {
+            background: var(--bg-panel); padding: 2.5rem; border-radius: 15px;
+            text-align: center; width: 90%; max-width: 400px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .login-box h2 { font-size: 2rem; margin-top: 0; color: var(--text-light); }
+        .login-box p { color: var(--text-muted); margin-bottom: 1.5rem; }
+        #access-code {
+            width: 100%; padding: 1rem; font-size: 1rem; border-radius: 8px;
+            border: 1px solid var(--border-color); background: var(--bg-dark);
+            color: var(--text-light); text-align: center; margin-bottom: 1.5rem;
+        }
+        #login-button {
+            width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 600;
+            border: none; border-radius: 8px; background: var(--accent-primary);
+            color: var(--text-light); cursor: pointer; transition: background 0.3s;
+        }
+        #login-button:hover { background: #c43751; }
+        #error-message { color: var(--accent-primary); font-weight: 500; height: 1.2rem; }
+
+        /* --- Main Panel --- */
+        #owner-panel {
+            padding: 2rem; max-width: 1200px; margin: 0 auto;
+            display: none; /* Awalnya disembunyikan */
+        }
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem; margin-bottom: 2rem;
+        }
+        header h1 { margin: 0; font-size: 2rem; }
+        #logout-button { background: none; border: 2px solid var(--accent-primary); color: var(--accent-primary); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        #logout-button:hover { background: var(--accent-primary); color: var(--text-light); }
+
+        .panel-section {
+            background: var(--bg-panel); padding: 2rem; border-radius: 15px;
+            margin-bottom: 2rem; border: 1px solid var(--border-color);
+        }
+        .panel-section h2 { margin-top: 0; font-size: 1.5rem; border-left: 4px solid var(--accent-primary); padding-left: 1rem; }
+        
+        .action-button {
+            background: linear-gradient(45deg, var(--accent-secondary), var(--accent-primary));
+            border: none; color: var(--text-light); padding: 1rem 1.5rem;
+            font-size: 1rem; font-weight: 600; border-radius: 8px;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; gap: 0.5rem; text-decoration: none;
+        }
+        .action-button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4); }
+
+        /* --- File Manager (Tampilan Baru) --- */
+        .file-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .file-item, .folder-item {
+            display: flex; align-items: center; background: var(--bg-card);
+            padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+        }
+        .file-info { flex-grow: 1; display: flex; align-items: center; gap: 1rem; }
+        .file-info i { font-size: 1.5rem; width: 25px; text-align: center; } /* Atur lebar ikon */
+        .folder-item .file-info i { color: #f9c74f; } /* Warna ikon folder */
+        .file-item .file-info i { color: var(--accent-primary); } /* Warna ikon file */
+        
+        /* CSS BARU: Untuk item yang ada di dalam folder */
+        .nested-item {
+            margin-left: 2.5rem; /* Menjorok ke dalam */
+            border-left: 3px solid var(--accent-secondary);
+        }
+        
+        .file-controls .btn {
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            color: var(--text-light); text-decoration: none; padding: 0.5rem 1rem;
+            border-radius: 5px; margin-left: 0.5rem; cursor: pointer; transition: background 0.3s;
+        }
+        .file-controls .btn:hover { background: var(--accent-secondary); }
+
+        /* --- Editor Modal --- */
+        #editor-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 3000;
+        }
+        .editor-container {
+            width: 90%; height: 90%; background: var(--bg-dark);
+            border-radius: 15px; display: flex; flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .editor-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+        }
+        .editor-controls button { background: var(--accent-primary); color: var(--text-light); border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; margin-left: 0.5rem; }
+        .editor-controls button.close-btn { background: var(--bg-card); }
+        #file-editor {
+            flex-grow: 1; background: #1e1e1e; color: #d4d4d4;
+            border: none; padding: 1rem; font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem; line-height: 1.5; resize: none;
+        }
+        .editor-footer {
+            padding: 1rem; font-size: 1rem; text-align: center;
+            background: var(--accent-primary); color: var(--text-light); font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2><i class="fas fa-lock"></i> Owner Panel</h2>
+            <p>Masukkan kode akses untuk melanjutkan</p>
+            <input type="password" id="access-code" placeholder="••••••••••••">
+            <button id="login-button">Masuk</button>
+            <p id="error-message"></p>
+        </div>
+    </div>
+
+    <main id="owner-panel">
+        <header>
+            <h1><i class="fas fa-cogs"></i> Admin Control Panel</h1>
+            <button id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </header>
+
+        <section class="panel-section">
+            <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
+            <button id="backup-button" class="action-button"><i class="fas fa-download"></i> Backup Semua File (.zip)</button>
+        </section>
+
+        <section class="panel-section">
+            <h2><i class="fas fa-folder-tree"></i> Peta File Website</h2>
+            <div id="file-list" class="file-list">
+                </div>
+        </section>
+    </main>
+
+    <div id="editor-modal">
+        <div class="editor-container">
+            <div class="editor-header">
+                <h3 id="editor-filename"></h3>
+                <div class="editor-controls">
+                    <button id="copy-code-button"><i class="fas fa-copy"></i> Salin Kode</button>
+                    <button class="close-btn"><i class="fas fa-times"></i> Tutup</button>
+                </div>
+            </div>
+            <textarea id="file-editor" spellcheck="false"></textarea>
+            <div class="editor-footer">
+                <i class="fas fa-exclamation-triangle"></i> PENTING: Salin kode ini & Timpa file di hosting Anda secara manual untuk menyimpan!
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ACCESS_CODE = "hikamura122333";
+        
+        const WEBSITE_FILE_MAP = [
+            'index.html', 'payment.html', 'produklainya.html', 'service.html',
+            'contact.html', 'tentang.html', 'education.html', 'owner.html', 'logo.png',
+            {
+                name: 'image',
+                files: ['qr_dana.png', 'qr_gopay.png', 'qr_ovo.png', 'qr_qris.png']
+            }
+        ];
+
+        // --- Elemen DOM ---
+        const loginOverlay = document.getElementById('login-overlay');
+        const ownerPanel = document.getElementById('owner-panel');
+        const loginButton = document.getElementById('login-button');
+        const accessCodeInput = document.getElementById('access-code');
+        const errorMessage = document.getElementById('error-message');
+        const logoutButton = document.getElementById('logout-button');
+        const editorModal = document.getElementById('editor-modal');
+        const fileEditor = document.getElementById('file-editor');
+        const editorFilename = document.getElementById('editor-filename');
+        const copyCodeButton = document.getElementById('copy-code-button');
+        const closeEditorButtons = document.querySelectorAll('.close-btn');
+        const fileListContainer = document.getElementById('file-list');
+        const backupButton = document.getElementById('backup-button');
+
+        // --- Logika Login & Logout ---
+        const handleLogin = () => {
+            if (accessCodeInput.value === ACCESS_CODE) {
+                loginOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loginOverlay.style.display = 'none';
+                    ownerPanel.style.display = 'block';
+                }, 500);
+            } else {
+                errorMessage.textContent = 'Kode akses salah!';
+            }
+        };
+        loginButton.addEventListener('click', handleLogin);
+        accessCodeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+        logoutButton.addEventListener('click', () => {
+            ownerPanel.style.display = 'none';
+            loginOverlay.style.display = 'flex';
+            accessCodeInput.value = '';
+            setTimeout(() => { loginOverlay.style.opacity = '1'; }, 50);
+        });
+
+        // --- Logika Editor ---
+        const openEditor = async (filePath) => {
+            if (!filePath.endsWith('.html')) {
+                alert('Hanya file HTML yang bisa diedit di sini.');
+                return;
+            }
+            editorFilename.textContent = `Mengedit: ${filePath}`;
+            fileEditor.value = `Memuat konten file ${filePath}...`;
+            editorModal.style.display = 'flex';
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) throw new Error(`File tidak ditemukan`);
+                fileEditor.value = await response.text();
+            } catch (error) {
+                fileEditor.value = `Error: Gagal memuat file '${filePath}'.\nPastikan file ada di server.`;
+            }
+        };
+        const closeEditor = () => { editorModal.style.display = 'none'; };
+        copyCodeButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(fileEditor.value).then(() => alert('Kode berhasil disalin!'), () => alert('Gagal menyalin kode.'));
+        });
+        closeEditorButtons.forEach(btn => btn.addEventListener('click', closeEditor));
+
+        // --- Logika Pemetaan File (DIPERBAIKI) ---
+        const populateFileList = (map, container, isNested = false) => {
+            map.forEach(item => {
+                if (typeof item === 'string') { // Ini adalah file
+                    const fullPath = item;
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'file-item' + (isNested ? ' nested-item' : '');
+                    
+                    const isEditable = fullPath.endsWith('.html');
+                    const editButtonHTML = isEditable ? `<button class="btn edit-btn" data-path="${fullPath}"><i class="fas fa-pencil-alt"></i> Edit</button>` : '';
+
+                    itemEl.innerHTML = `
+                        <div class="file-info">
+                            <i class="fas ${fullPath.includes('.') ? 'fa-file-alt' : 'fa-folder'}"></i>
+                            <span>${fullPath.split('/').pop()}</span>
+                        </div>
+                        <div class="file-controls">
+                            <a href="${fullPath}" target="_blank" class="btn"><i class="fas fa-eye"></i> Lihat</a>
+                            ${editButtonHTML}
+                        </div>
+                    `;
+                    container.appendChild(itemEl);
+                } else if (typeof item === 'object' && item.name && item.files) { // Ini adalah folder
+                    const folderEl = document.createElement('div');
+                    folderEl.className = 'folder-item';
+                    folderEl.innerHTML = `<div class="file-info"><i class="fas fa-folder"></i> <span>${item.name}</span></div>`;
+                    container.appendChild(folderEl);
+                    
+                    // Rekursif untuk file di dalam folder
+                    item.files.forEach(fileInFolder => {
+                        const nestedPath = `${item.name}/${fileInFolder}`;
+                        const fileEl = document.createElement('div');
+                        fileEl.className = 'file-item nested-item';
+                        
+                        const isEditable = nestedPath.endsWith('.html');
+                        const editButtonHTML = isEditable ? `<button class="btn edit-btn" data-path="${nestedPath}"><i class="fas fa-pencil-alt"></i> Edit</button>` : '';
+
+                        fileEl.innerHTML = `
+                            <div class="file-info">
+                                <i class="fas ${nestedPath.includes('.') ? 'fa-file-alt' : 'fa-folder'}"></i>
+                                <span>${fileInFolder}</span>
+                            </div>
+                            <div class="file-controls">
+                                <a href="${nestedPath}" target="_blank" class="btn"><i class="fas fa-eye"></i> Lihat</a>
+                                ${editButtonHTML}
+                            </div>
+                        `;
+                        container.appendChild(fileEl);
+                    });
+                }
+            });
+        };
+
+        fileListContainer.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.edit-btn');
+            if (editBtn) openEditor(editBtn.dataset.path);
+        });
+
+        // --- Logika Backup (DIPERBAIKI) ---
+        const backupWebsite = async () => {
+            backupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mempersiapkan file...';
+            backupButton.disabled = true;
+
+            const zip = new JSZip();
+            const filesToFetch = [];
+
+            // Fungsi rekursif untuk mengumpulkan semua path file
+            const collectFiles = (map, pathPrefix = '') => {
+                map.forEach(item => {
+                    if (typeof item === 'string') {
+                        filesToFetch.push(pathPrefix + item);
+                    } else if (typeof item === 'object' && item.name && item.files) {
+                        collectFiles(item.files, pathPrefix + item.name + '/');
+                    }
+                });
+            };
+            
+            collectFiles(WEBSITE_FILE_MAP);
+
+            const fetchPromises = filesToFetch.map(path =>
+                fetch(path)
+                .then(res => {
+                    if (!res.ok) throw new Error(`Gagal fetch ${path}`);
+                    return res.blob();
+                })
+                .then(blob => {
+                    zip.file(path, blob);
+                })
+                .catch(err => console.error(err))
+            );
+
+            await Promise.all(fetchPromises);
+
+            backupButton.innerHTML = '<i class="fas fa-cog fa-spin"></i> Membuat .zip...';
+            zip.generateAsync({ type: "blob" }).then(content => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                const date = new Date().toISOString().slice(0, 10);
+                link.download = `backup-hikamurastore-${date}.zip`;
+                link.click();
+                
+                backupButton.innerHTML = '<i class="fas fa-download"></i> Backup Semua File (.zip)';
+                backupButton.disabled = false;
+            });
+        };
+        backupButton.addEventListener('click', backupWebsite);
+
+        // Inisialisasi Panel
+        populateFileList(WEBSITE_FILE_MAP, fileListContainer);
+    });
+    </script>
+</body>
+</html>
