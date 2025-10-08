@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hubungi Kami - Hikamura Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --border-color: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b3b3b3;
+            --accent-color: #00aaff;
+            --accent-hover: #0088cc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-primary); overflow-x: hidden; }
+
+        /* --- Animasi & Efek Baru --- */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-primary); display: flex; justify-content: center;
+            align-items: center; z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid var(--border-color);
+            border-top-color: var(--accent-color); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .animated-gradient-text {
+            background: linear-gradient(90deg, var(--accent-color), #fff, #00aaff);
+            background-size: 200% auto; color: #fff; background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
+        }
+        @keyframes gradient-flow { to { background-position: 200% center; } }
+
+        .reveal {
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        /* --- Akhir Animasi & Efek Baru --- */
+
+        header {
+            padding: 20px 10%; background: var(--bg-primary); display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-size: 24px; color: #fff; text-decoration: none; font-weight: 700; }
+        
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px;
+            border-radius: 40px; font-size: 16px; letter-spacing: 1px;
+            text-decoration: none; font-weight: 600; transition: all 0.3s ease;
+            border: 2px solid transparent; cursor: pointer;
+        }
+        .btn-primary { background: var(--accent-color); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 20px var(--accent-color); transform: translateY(-3px); }
+        .btn-secondary { background: transparent; color: var(--accent-color); border: 2px solid var(--accent-color); }
+        .btn-secondary:hover { background: var(--accent-color); color: #fff; }
+        
+        .section { padding: 80px 10%; }
+        .section-title { text-align: center; font-size: 36px; margin-bottom: 50px; color: #fff; }
+        .section-title span { color: var(--accent-color); }
+
+        .contact-container { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1100px; margin: 0 auto; }
+        .contact-form { background-color: var(--bg-card); padding: 2.5rem; border-radius: 15px; border: 1px solid var(--border-color); }
+        .contact-form h3, .contact-info h3 { font-size: 24px; margin-bottom: 1.5rem; color: var(--text-primary); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 1rem; font-size: 1rem; color: var(--text-primary);
+            background-color: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 8px; transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 8px rgba(0, 170, 255, 0.5); }
+        
+        .contact-info .info-item {
+            display: flex; align-items: center; gap: 1.5rem; background-color: var(--bg-card);
+            padding: 1.5rem; border-radius: 15px; margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .contact-info .info-item:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 170, 255, 0.1); }
+        .contact-info .info-item .icon { font-size: 2rem; color: var(--accent-color); }
+        .contact-info .info-item .text h4 { font-size: 1.1rem; color: var(--text-primary); }
+        .contact-info .info-item .text a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s; }
+        .contact-info .info-item .text a:hover { color: var(--accent-color); }
+        
+        footer { text-align: center; padding: 20px; background-color: var(--bg-secondary); border-top: 1px solid var(--border-color); font-size: 14px; }
+
+        @media (max-width: 992px) { .contact-container { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            header, .section { padding-left: 5%; padding-right: 5%; }
+            .section-title { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div>
+
+    <header>
+        <a href="index.html" class="logo">Hikamura Store</a>
+        <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali ke Menu</a>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2 class="section-title reveal animated-gradient-text">Hubungi <span>Kami</span></h2>
+            <div class="contact-container">
+
+                <div class="contact-form reveal">
+                    <h3>Kirim Pesan Langsung</h3>
+                    <form action="#">
+                        <div class="form-group">
+                            <label for="name">Nama Lengkap</label>
+                            <input type="text" id="name" name="name" placeholder="Masukkan nama Anda" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Alamat Email</label>
+                            <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Pesan Anda</label>
+                            <textarea id="message" name="message" rows="6" placeholder="Tulis pesan Anda di sini..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kirim Pesan</button>
+                    </form>
+                </div>
+
+                <div class="contact-info">
+                    <h3 class="reveal">Informasi Kontak</h3>
+                    
+                    <div class="info-item reveal">
+                        <div class="icon"><i class="fab fa-whatsapp"></i></div>
+                        <div class="text"> <h4>WhatsApp</h4> <a href="https://wa.me/6285820947960" target="_blank">+62 858-2094-7960</a> </div>
+                    </div>
+                    
+                    <div class="info-item reveal">
+  <div class="icon"><i class="fab fa-telegram"></i></div>
+  <div class="text">
+    <h4>Telegram</h4>
+    <a href="tg://resolve?domain=ArmanGZOffc"
+       onclick="setTimeout(() => { window.location='https://t.me/ArmanGZOffc' }, 500)">
+       @ArmanGZOffc
+    </a>
+  </div>
+</div>
+
+                    <div class="info-item reveal">
+                        <div class="icon"><i class="fas fa-envelope"></i></div>
+                        <div class="text"> <h4>Email</h4> <a href="mailto:ArmanGZOffc@gmail.com">supportmallzbot@mallzbot.my.id</a> </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 ARMAN GZ Official. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.querySelector('.preloader');
+            window.addEventListener('load', () => { preloader.classList.add('hidden'); });
+
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            revealElements.forEach(el => { observer.observe(el); });
+        });
+    </script>
+</body>
+</html>
